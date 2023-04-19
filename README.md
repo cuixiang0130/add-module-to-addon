@@ -18,3 +18,4 @@ system.runInterval(()=>{
     info("test fib(10):" + fib(10))
 },100)
 ```
+![image](https://github.com/cuixiang0130/add-module-to-addon/blob/main/result.jpg)
