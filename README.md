@@ -1,29 +1,20 @@
-# LiteLoaderBDS C++ Plugin Template
+# add-module-to-addon
 
-The template repository for LiteLoaderBDS C++ plugin development.
+向addon中的script api添加自定义模块的一个测试
 
-## Usage
-
-* Write and build your plugin
-
-  Please refer to [LiteLoaderBDS C++ Plugin Development Documentation](https://cpp.docs.litebds.com/en/) or [LiteLoaderBDS C++ 插件开发文档](https://cpp.docs.litebds.com/zh-Hans/).
-
-* Edit README.md and LICENSE
-
-  You ought not to keep the original README.md, for it contains instructions on how to build your own plugin, which might not fit your plugin repository. The README.md of your repository should contain instructions on how to build, install and use your plugin.
-
-  You don't necessarily want your repository to be open sourced under the Unlicense, so please choose your own license in place of the `LICENSE` file.
-
-## For Beta Developers
-
-If you would like to experience the latest features for plugins in beta versions of LiteLoaderBDS, you can switch the branch of the SDK to beta. Run the commands below under the plugin repository:
-
-```sh
-git submodule set-branch --branch beta SDK
-git submodule update --init --remote
+通过hook函数
+```c++
+void Scripting::QuickJS::ContextObject::_bindModules(ContextObject*, std::vector<Scripting::ModuleBinding> const &)
 ```
+从ContextObject拿到JSContext并在原本的模块注册逻辑后注册自定义模块  
+由于PeEditor忽略了所有C函数符号，暂时需要使用这个[fork](https://github.com/cuixiang0130/PeEditor)  
+注册的模块似乎要以@开头才会被加载  
+行为包script api 测试  
+```javascript
+import { fib, info } from '@custom/test'
+import { system } from '@minecraft/server'
 
-## License
-
-This repository is open source under the Unlicense.
-Please refer to [the license file](LICENSE) for further information.
+system.runInterval(()=>{
+    info("test fib(10):" + fib(10))
+},100)
+```

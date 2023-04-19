@@ -12,6 +12,10 @@ file(GLOB_RECURSE SRC_FILES_DIR
 )
 
 include_directories(
+    ${CMAKE_SOURCE_DIR}/src/include
+)
+
+include_directories(
     ${CMAKE_SOURCE_DIR}/SDK/include
 )
 

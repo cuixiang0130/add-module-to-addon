@@ -18,7 +18,6 @@
 // Please FILL UP the content in this area before developing your plugin, and DO NOT modify any code
 // outside this area.
 
-static_assert(false, "Please modify your plugin information below and delete this line!");
 
 // The basic descriptions of your plugin
 // Note that the the plugin name CAN ONLY CONTAIN Enlish alphabet, digit, dash(-) and
