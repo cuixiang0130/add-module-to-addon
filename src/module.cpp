@@ -1,3 +1,4 @@
+#include <llapi/LoggerAPI.h>
 #include "module.h"
 
 extern Logger logger;

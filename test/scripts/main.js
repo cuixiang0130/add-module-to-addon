@@ -1,6 +1,11 @@
-import { fib, info } from '@custom/test'
-import { system } from '@minecraft/server'
+//import { fib, info } from '@custom/test'
+import { system, world } from '@minecraft/server'
+import { moduleTest } from './ModuleTest.js'
+
+Logger.info("main :fib(10):" + fib(10))
 
 system.runInterval(()=>{
-    info("test fib(10):" + fib(10))
+    Logger.info("runInterval :fib(10):" + fib(10))
 },100)
+
+moduleTest("module func used in main :");

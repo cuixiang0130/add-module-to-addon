@@ -11,6 +11,13 @@ file(GLOB_RECURSE SRC_FILES_DIR
     ${PROJECT_SOURCE_DIR}/src/*.h
 )
 
+
+set(SCRIPTX_BACKEND QuickJs)
+
+include(${CMAKE_SOURCE_DIR}/ScriptX/CMakeLists.txt)
+
+include_directories(${CMAKE_SOURCE_DIR}/quickjs)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/include
 )
@@ -69,6 +76,7 @@ add_link_options(
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC_FILES_DIR})
 
 target_link_libraries(${CMAKE_PROJECT_NAME} 
+    ScriptX
 	"${CMAKE_SOURCE_DIR}/SDK/lib/LiteLoader.lib"
 	"${CMAKE_SOURCE_DIR}/SDK/lib/bedrock_server_api.lib"
 	"${CMAKE_SOURCE_DIR}/SDK/lib/bedrock_server_var.lib"
