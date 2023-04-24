@@ -2,6 +2,26 @@
 
 向addon中的script api添加自定义模块的一个测试
 
+## Minecraft 绑定native层的细节
+### 对于对象
+通过JS_SetOpaque可以给JSValue挂上一个void*  
+然而有点难绷的是  
+Minecraft给对象挂上去的并不是一个指针，而是一个64位**整数**  
+这个整数高8位是ContextId，低56位是ObjectHandleValue  
+用这个整数构造一个ObjectHandle  
+通过对当前的JSContext调用JS_GetContextOpaque可以拿到ContextUserData*  
+调用其getLifetimeRegistry()拿到LifetimeRegistry  
+先通过valid检验ObjectHandle是否有效  
+再通过LifetimeRegistry的resolveAsAny可以拿到一个entt::meta_any  
+进一步就可以拿到native层的对象了  
+### 对于成员函数以及Getter和Setter
+JS_NewCFunctionData可以传一个JSValue*,调用注册的func的时候就能拿到
+Minecraft用的是一个ArrayBuffer  
+然而还是有点难绷的是  
+这个ArrayBuffer在是成员函数时是8个字节，但其内容是其实一个**指针** Scripting::Reflection::IFunction *  
+不过这主要因为是JS没有64位整数，64位整数会变成浮点数  
+在是Getter和Setter时是16个字节，兴许是两个指针罢  
+未完待续
 ## 测试QuickJs API
 通过hook函数
 ```c++
@@ -36,11 +56,13 @@ BOOL JS_IsConstructor(JSContext* ctx, JSValueConst val);
 BOOL JS_SetConstructorBit(JSContext* ctx, JSValueConst func_obj, BOOL val);
 void JS_UpdateStackTop(JSRuntime* rt);
 ```
-hook运行脚本的函数，保证调用native函数时在script::EngineScope内
+~~hook运行脚本的函数，保证调用native函数时在script::EngineScope内~~
 ```c++
 Scripting::QuickJS::ContextObject::run(std::string const &,std::string const &);
 Scripting::QuickJS::ContextObject::call(Scripting::TypedObjectHandle<Scripting::ClosureType>,entt::meta_any *,uint,entt::meta_type);
 ```
+修改ScriptX *newFunction* 和 *newRawFunction* 调用callback前加个EngineScope
+
 测试js  
 main.js
 ```javascript
