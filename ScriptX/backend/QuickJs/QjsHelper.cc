@@ -100,6 +100,7 @@ Local<Function> newRawFunction(QjsEngine* engine, void* data1, void* data2,
 
         try {
           auto args = qjs_interop::makeArguments(engine, this_val, argc, argv);
+          script::EngineScope enter(engine);
 
           auto ret = callback(args, data_1, data_2, (magic & JS_CALL_FLAG_CONSTRUCTOR) != 0);
           return qjs_interop::getLocal(ret, engine->context_);

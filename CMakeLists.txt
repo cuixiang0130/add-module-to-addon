@@ -18,6 +18,8 @@ include(${CMAKE_SOURCE_DIR}/ScriptX/CMakeLists.txt)
 
 include_directories(${CMAKE_SOURCE_DIR}/quickjs)
 
+include_directories(${CMAKE_SOURCE_DIR}/ScriptX/backend/QuickJs)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}/src/include
 )

@@ -123,6 +123,7 @@ Local<Function> Function::newFunction(script::FunctionCallback callback) {
         Tracer trace(engine, "CppFunction");
         try {
           auto args = qjs_interop::makeArguments(engine, this_val, argc, argv);
+          script::EngineScope enter(engine);
           auto ret = (*callback)(args);
           return qjs_interop::getLocal(ret);
         } catch (const Exception& e) {
