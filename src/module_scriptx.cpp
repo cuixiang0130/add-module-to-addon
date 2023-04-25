@@ -13,11 +13,15 @@ namespace ScriptModuleMinecraft{
     class ScriptPlayer{
     public:
         //?tryGetPlayer@ScriptPlayer@ScriptModuleMinecraft@@QEBAPEAVPlayer@@XZ
-        Player* tryGetPlayer(void) const;
+        MCAPI Player* tryGetPlayer(void) const;
     };
 }
-
-
+namespace Scripting{
+    namespace QuickJS{
+        // ?JSValueToNativeAny@QuickJS@Scripting@@YA?AV?$variant@Vmeta_any@entt@@UJSValue@@@std@@PEAUJSContext@@UJSValue@@Vmeta_type@entt@@@Z
+        MCAPI std::variant<entt::meta_any,JSValue> JSValueToNativeAny(JSContext*, JSValue, entt::meta_type);
+    }
+}
 
 static script::Local<script::Value> js_get_ip(const script::Arguments& args) {
 
@@ -25,22 +29,14 @@ static script::Local<script::Value> js_get_ip(const script::Arguments& args) {
     using namespace entt;
     auto ctx = qjs_interop::currentContext();
     auto val = qjs_interop::getLocal(args[0], ctx);
-    auto ptr = (uint64_t)JS_GetOpaqueWithoutClass(val);
-    auto ctxd = (Scripting::QuickJS::ContextUserData*)JS_GetContextOpaque(ctx);
-    Scripting::LifetimeRegistry& reg = ctxd->getLifetimeRegistry();
-    Scripting::ObjectHandle handle(ptr);
-    if (reg.valid(handle)) {
-        auto any = reg.resolveAsAny(handle);
-        for (auto&& [id, func] : any.type().func()) {
-            logger.info("id {0} return {1}",id,func.ret().info().name());
-        }
-        auto splayer = any.try_cast<ScriptModuleMinecraft::ScriptPlayer>();
-        if (splayer) {
-            auto player = splayer->tryGetPlayer();
-            auto ip = player->getIP();
-            return String::newString(ip);
-        }
+    auto any = Scripting::QuickJS::JSValueToNativeAny(ctx, val, resolve<ScriptModuleMinecraft::ScriptPlayer>());
+    if (any.index() == 0) {
+        auto splayer = std::get<meta_any>(any).try_cast<ScriptModuleMinecraft::ScriptPlayer>();
+        auto player = splayer->tryGetPlayer();
+        auto ip = player->getIP();
+        return String::newString(ip);
     }
+    
     return Local<Value>();
 }
 
